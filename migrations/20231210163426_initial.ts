@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
 		table.string('username').notNullable();
 		table.string('first_name');
 		table.string('surname');
-		table.string('e-mail').notNullable();
+		table.string('e_mail').notNullable();
 		table.string('password').notNullable();
 		table.integer('ranking').defaultTo(200);
 		table.timestamp('created_at').defaultTo(knex.fn.now());
