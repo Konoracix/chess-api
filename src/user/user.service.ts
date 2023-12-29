@@ -3,9 +3,6 @@ const bcrypt = require('bcrypt');
 import db from '../../db'
 import { v4 as uuid } from 'uuid';
 import { User } from './user.model';
-import { stringify } from 'querystring';
-import { resourceUsage } from 'process';
-import { PrivateKeyInput } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -68,13 +65,29 @@ export class UserService {
 		
 	}
 	
+	async getUserById(id): Promise<User>{
+		let user;
+		try {
+			user = await db('users').where({
+				id: id,
+				deleted_at: null
+			})
+			if(user.length == 0){
+				throw new NotFoundException();
+			}
+			return user[0];
+		} catch (error) {
+			if(error.response?.statusCode == 404) throw new NotFoundException();
+			throw new BadRequestException();
+		}
+	}
+
 	async getAllUsers(): Promise<User>{
 		try {
-			return await db('users');
+			return await db('users').where({deleted_at: null});
 		} catch (error) {
 			throw new BadRequestException();
 		}
 	}
 
 }
-

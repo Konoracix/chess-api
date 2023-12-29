@@ -18,6 +18,11 @@ export class UserController {
 		return await this.userService.updateUser(updateUserDto, id);
 	}
 
+	@Get('/:id')
+	async getUserById(@Param('id') id): Promise<User>{
+		return this.userService.getUserById(id);
+	}
+
 	@Get()
 	async getAllUsers():Promise<User>{
 		return await this.userService.getAllUsers();
