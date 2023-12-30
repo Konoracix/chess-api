@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Put, Param, Get } from '@nestjs/common';
+import { Body, Controller, Post, Put, Param, Get, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -24,7 +25,7 @@ export class UserController {
 	}
 
 	@Get()
-	async getAllUsers():Promise<User>{
-		return await this.userService.getAllUsers();
+	async getAllUsers(@Query() filter: FilterUserDto): Promise<User>{
+		return await this.userService.getAllUsers(filter);
 	}
 }

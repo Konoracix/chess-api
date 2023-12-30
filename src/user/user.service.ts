@@ -82,12 +82,50 @@ export class UserService {
 		}
 	}
 
-	async getAllUsers(): Promise<User>{
+	async getAllUsers(filter): Promise<User>{
+
 		try {
-			return await db('users').where({deleted_at: null});
+			return db('users').where(builder => {
+				let isDeleted:Boolean = false;
+				for(let key in filter){
+					switch (key) {
+						case 'date_from':
+							 builder.andWhere("created_at", ">", filter[key])
+							break;
+						case 'date_to':
+							builder.andWhere("created_at", "<", filter[key])
+							break;
+						case 'ranking_from':
+							builder.andWhere("ranking", ">", filter[key])
+							break;
+						case 'ranking_to':
+							builder.andWhere("ranking", "<", filter[key])
+							break;
+						case 'deleted':
+							isDeleted = filter[key].toLowerCase().trim() === 'true';
+							break;
+						default:
+							break;
+					}
+				}
+				if(isDeleted == false){
+					console.log(isDeleted)
+					builder.andWhere("deleted_at", null);
+				}
+			})
+			.orderBy(filter.order_by ? filter.order_by : 'created_at')
 		} catch (error) {
-			throw new BadRequestException();
+			// throw new BadRequestException();
+			throw error
 		}
+
+		
+
+		// try {
+		// 	return await db('users').where({deleted_at: null});
+		// } catch (error) {
+		// 	throw new BadRequestException();
+		// }
 	}
 
 }
