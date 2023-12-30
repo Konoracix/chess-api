@@ -56,7 +56,7 @@ export class UserService {
 				});
 			})
 		}
-
+		user.updated_at = new Date;
 		try {
 			return (await db('users').where({id: id}).update(user).returning('*'))[0];
 		} catch (error) {
@@ -115,17 +115,8 @@ export class UserService {
 			})
 			.orderBy(filter.order_by ? filter.order_by : 'created_at')
 		} catch (error) {
-			// throw new BadRequestException();
-			throw error
+			throw new BadRequestException();
 		}
-
-		
-
-		// try {
-		// 	return await db('users').where({deleted_at: null});
-		// } catch (error) {
-		// 	throw new BadRequestException();
-		// }
 	}
 
 }
