@@ -31,4 +31,12 @@ export class FilterUserDto {
 	@IsOptional()
 	@IsEnum(OrderBy)
 	order_by: OrderBy;
+
+	@IsOptional()
+	@IsNumberString()
+	users_on_page: number;
+	
+	@IsOptional()
+	@IsNumberString()
+	page_number: number;
 }

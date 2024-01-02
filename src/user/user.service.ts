@@ -2,7 +2,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundExc
 const bcrypt = require('bcrypt');
 import db from '../../db'
 import { v4 as uuid } from 'uuid';
-import { User } from './user.model';
+import { User, UserPaginated } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -82,10 +82,10 @@ export class UserService {
 		}
 	}
 
-	async getAllUsers(filter): Promise<User>{
+	async getAllUsers(filter): Promise<UserPaginated>{
 
 		try {
-			return db('users').where(builder => {
+			let totalNumberOfUsers = (await db('users').where(builder => {
 				let isDeleted:Boolean = false;
 				for(let key in filter){
 					switch (key) {
@@ -109,14 +109,49 @@ export class UserService {
 					}
 				}
 				if(isDeleted == false){
-					console.log(isDeleted)
+					builder.andWhere("deleted_at", null);
+				}
+			})).length;
+			
+			let numberOfUsersOnPage = filter.users_on_page ? parseInt(filter.users_on_page) : 10;
+			let pageNumber = filter.page_number ? parseInt(filter.page_number) : 1;
+
+			let users = await db('users').where(builder => {
+				let isDeleted:Boolean = false;
+				for(let key in filter){
+					switch (key) {
+						case 'date_from':
+							 builder.andWhere("created_at", ">", filter[key])
+							break;
+						case 'date_to':
+							builder.andWhere("created_at", "<", filter[key])
+							break;
+						case 'ranking_from':
+							builder.andWhere("ranking", ">", filter[key])
+							break;
+						case 'ranking_to':
+							builder.andWhere("ranking", "<", filter[key])
+							break;
+						case 'deleted':
+							isDeleted = filter[key].toLowerCase().trim() === 'true';
+							break;
+						default:
+							break;
+					}
+				}
+				if(isDeleted == false){
 					builder.andWhere("deleted_at", null);
 				}
 			})
-			.orderBy(filter.order_by ? filter.order_by : 'created_at')
+			.orderBy(filter.order_by ? filter.order_by : 'created_at').offset(numberOfUsersOnPage*(pageNumber-1)).limit(numberOfUsersOnPage)
+			return {
+				page_number: pageNumber,
+				users_on_page: numberOfUsersOnPage,
+				total_pages: Math.ceil(totalNumberOfUsers/numberOfUsersOnPage),
+				users: users
+			}
 		} catch (error) {
 			throw new BadRequestException();
 		}
 	}
-
 }

@@ -10,3 +10,10 @@ export interface User {
 	updated_at: Date;
 	deleted_at: Date;
 }
+
+export interface UserPaginated {
+	page_number: number;
+	users_on_page: number;
+	total_pages: number;
+	users: User[]
+}
