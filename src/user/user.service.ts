@@ -154,4 +154,19 @@ export class UserService {
 			throw new BadRequestException();
 		}
 	}
+
+	async deleteUser(id): Promise<User>{
+		try {
+	
+			let now = new Date;
+			
+			return (await db('users').where({id: id}).update({
+				updated_at: now,
+				deleted_at: now,
+			}).returning('*'))[0];
+	
+		} catch (error) {
+			throw new BadRequestException();	
+		}
+	}
 }

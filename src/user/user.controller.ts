@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Param, Get, Query } from '@nestjs/common';
+import { Body, Controller, Post, Put, Param, Get, Query, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User, UserPaginated } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,5 +27,10 @@ export class UserController {
 	@Get()
 	async getAllUsers(@Query() filter: FilterUserDto): Promise<UserPaginated>{
 		return await this.userService.getAllUsers(filter);
+	}
+	
+	@Delete('/:id')
+	async deleteUser(@Param('id') id): Promise<User>{
+		return this.userService.deleteUser(id);
 	}
 }
