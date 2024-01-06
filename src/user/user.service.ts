@@ -65,13 +65,16 @@ export class UserService {
 		
 	}
 	
-	async getUserById(id): Promise<User>{
+	async getUserById(id, deleted): Promise<User>{
 		let user;
 		try {
-			user = await db('users').where({
-				id: id,
-				deleted_at: null
+			user = await db('users').where(builder => {
+				builder.andWhere("id", id)
+				if(deleted != 'true'){
+					builder.andWhere("deleted_at", null)
+				}
 			})
+
 			if(user.length == 0){
 				throw new NotFoundException();
 			}

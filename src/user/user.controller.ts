@@ -20,8 +20,8 @@ export class UserController {
 	}
 
 	@Get('/:id')
-	async getUserById(@Param('id') id): Promise<User>{
-		return this.userService.getUserById(id);
+	async getUserById(@Param('id') id, @Query('deleted') deleted): Promise<User>{
+		return this.userService.getUserById(id, deleted);
 	}
 
 	@Get()
