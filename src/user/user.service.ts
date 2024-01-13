@@ -114,7 +114,7 @@ export class UserService {
 				if(isDeleted == false){
 					builder.andWhere("deleted_at", null);
 				}
-			})).length;
+			}).count('*'))[0].count;
 			
 			let numberOfUsersOnPage = filter.users_on_page ? parseInt(filter.users_on_page) : 10;
 			let pageNumber = filter.page_number ? parseInt(filter.page_number) : 1;
